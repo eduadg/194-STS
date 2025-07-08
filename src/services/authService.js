@@ -21,26 +21,32 @@ export class AuthService {
   }
 
   // Registro com email e senha
-  static async register(email, password, displayName = null) {
+  static async register(email, password, displayName = null, userType = 'cliente') {
     try {
+      console.log('[AuthService] Iniciando registro:', { email, displayName, userType });
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      
-      // Atualizar display name no Auth
+      console.log('[AuthService] Usuário criado no Auth:', userCredential.user.uid);
       if (displayName) {
         await updateProfile(userCredential.user, { displayName });
+        console.log('[AuthService] DisplayName atualizado');
       }
-      
-      // Criar perfil no Firestore
-      await this.createUserProfile(userCredential.user.uid, {
+      // Criar perfil no Firestore com userType
+      const profileResult = await this.createUserProfile(userCredential.user.uid, {
         email,
         displayName,
+        userType,
         createdAt: new Date(),
         lastLogin: new Date(),
         isActive: true
       });
-      
+      if (!profileResult.success) {
+        console.error('[AuthService] Erro ao criar perfil no Firestore:', profileResult.error);
+        return { success: false, error: profileResult.error };
+      }
+      console.log('[AuthService] Perfil criado no Firestore');
       return { success: true, user: userCredential.user };
     } catch (error) {
+      console.error('[AuthService] Erro no registro:', error);
       return { success: false, error: error.message };
     }
   }
@@ -52,15 +58,16 @@ export class AuthService {
       await setDoc(userRef, {
         email: userData.email,
         displayName: userData.displayName || null,
+        userType: userData.userType || null,
         createdAt: new Date(),
         lastLogin: new Date(),
         isActive: true,
         ...userData
       });
-      
+      console.log('[AuthService] Documento criado no Firestore:', userId);
       return { success: true };
     } catch (error) {
-      console.error("Erro ao criar perfil:", error);
+      console.error('[AuthService] Erro ao criar perfil:', error);
       return { success: false, error: error.message };
     }
   }

@@ -1,161 +1,173 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuthContext } from '../contexts/AuthContext';
-import { ROUTES } from '../routes/constants';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import AuthLayout from '../layouts/AuthLayout';
 import Input from '../components/ui/Input';
-import PasswordInput from '../components/ui/PasswordInput';
 import Button from '../components/ui/Button';
-import { EmailIcon } from '../components/ui/Icons';
+import PasswordInput from '../components/ui/PasswordInput';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
+import { useAuth } from '../hooks/useAuth';
 
 const LoginPage = () => {
-  const { login, error: authError } = useAuthContext();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [localError, setLocalError] = useState('');
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    
-    // Limpar erro quando usuário começar a digitar
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
-  };
+  const { login, error, user } = useAuth();
+  const navigate = useNavigate();
 
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!formData.email) {
-      newErrors.email = 'Email é obrigatório';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email inválido';
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
     }
-    
-    if (!formData.password) {
-      newErrors.password = 'Senha é obrigatória';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Senha deve ter pelo menos 6 caracteres';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) return;
-    
-    setIsLoading(true);
-    
+    setLoading(true);
+    setLocalError('');
     try {
-      const result = await login(formData.email, formData.password);
-      
-      if (result.success) {
-        console.log('Login realizado com sucesso:', result.user);
-        // Redirecionamento será tratado pelo contexto de autenticação
-      } else {
-        // Erro será tratado pelo contexto
-        console.error('Erro no login:', result.error);
+      const result = await login(email, password);
+      if (!result.success) {
+        setLocalError(result.error || 'Erro ao fazer login');
       }
-    } catch (error) {
-      console.error('Erro inesperado:', error);
+      // O redirecionamento é feito pelo useEffect
+    } catch (err) {
+      setLocalError(err.message || 'Erro ao fazer login');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center p-4">
+    <AuthLayout>
       <div className="w-full max-w-md">
-        {/* Card Principal */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mb-4">
-              <span className="text-white font-bold text-xl">194</span>
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="mb-6">
+            <h1 className="text-gradient text-4xl font-black tracking-tight mb-2">
               194-STS
             </h1>
-            <p className="text-gray-600">
-              Faça login para continuar
-            </p>
+            <div 
+              className="w-20 h-1 mx-auto rounded-full"
+              style={{ background: 'linear-gradient(90deg, var(--primary-500), var(--secondary-500))' }}
+            ></div>
           </div>
+          <h2 className="text-2xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
+            Bem-vindo de volta
+          </h2>
+          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+            Entre na sua conta para continuar
+          </p>
+        </div>
 
-          {/* Erro de autenticação */}
-          {authError && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600">{authError}</p>
-            </div>
-          )}
-
-          {/* Formulário */}
+        {/* Login Form */}
+        <div className="card p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
-            <Input
-              type="email"
-              name="email"
-              label="Email"
-              placeholder="seu@email.com"
-              value={formData.email}
-              onChange={handleChange}
-              error={errors.email}
-              required
-              icon={EmailIcon}
-            />
+            {(localError || error) && (
+              <div 
+                className="p-4 rounded-lg border text-sm"
+                style={{
+                  backgroundColor: 'var(--error)' + '10',
+                  borderColor: 'var(--error)',
+                  color: 'var(--error)'
+                }}
+              >
+                {localError || error}
+              </div>
+            )}
 
-            <PasswordInput
-              name="password"
-              label="Senha"
-              placeholder="Digite sua senha"
-              value={formData.password}
-              onChange={handleChange}
-              error={errors.password}
-              required
-            />
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                  Email
+                </label>
+                <Input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="seu@email.com"
+                  required
+                  autoComplete="email"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                  Senha
+                </label>
+                <PasswordInput
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Digite sua senha"
+                  required
+                  autoComplete="current-password"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  className="w-4 h-4 rounded border-2"
+                  style={{ 
+                    accentColor: 'var(--primary-500)',
+                    borderColor: 'var(--border-primary)'
+                  }}
+                />
+                <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  Lembrar de mim
+                </span>
+              </label>
+              <button 
+                type="button"
+                className="text-sm font-medium hover:underline"
+                style={{ color: 'var(--primary-500)' }}
+              >
+                Esqueceu a senha?
+              </button>
+            </div>
 
             <Button
               type="submit"
-              fullWidth
-              loading={isLoading}
-              disabled={isLoading}
+              disabled={loading}
+              className="w-full btn btn-primary py-4 text-base font-semibold"
             >
-              {isLoading ? 'Entrando...' : 'Entrar'}
+              {loading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <LoadingSpinner size="sm" />
+                  Entrando...
+                </div>
+              ) : (
+                'Entrar'
+              )}
             </Button>
           </form>
 
-          {/* Footer */}
-          <div className="mt-8 text-center">
-            <p className="text-sm text-gray-600">
+          {/* Register Link */}
+          <div className="mt-8 pt-6 border-t" style={{ borderColor: 'var(--border-primary)' }}>
+            <p className="text-center text-sm" style={{ color: 'var(--text-muted)' }}>
               Não tem uma conta?{' '}
               <Link 
-                to={ROUTES.REGISTER} 
-                className="text-primary-600 hover:text-primary-700 font-medium"
+                to="/register" 
+                className="font-semibold hover:underline transition-colors"
+                style={{ color: 'var(--primary-500)' }}
               >
-                Criar conta
+                Cadastre-se aqui
               </Link>
             </p>
           </div>
         </div>
 
-        {/* Informações adicionais */}
+        {/* Footer */}
         <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500">
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
             © 2024 194-STS. Todos os direitos reservados.
           </p>
         </div>
       </div>
-    </div>
+    </AuthLayout>
   );
 };
 

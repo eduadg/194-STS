@@ -1,178 +1,227 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuthContext } from '../contexts/AuthContext';
-import { ROUTES } from '../routes/constants';
+import AuthLayout from '../layouts/AuthLayout';
 import Input from '../components/ui/Input';
-import PasswordInput from '../components/ui/PasswordInput';
 import Button from '../components/ui/Button';
-import { EmailIcon } from '../components/ui/Icons';
+import PasswordInput from '../components/ui/PasswordInput';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
+import { useAuth } from '../hooks/useAuth';
+
 
 const RegisterPage = () => {
-  const { register, error: authError } = useAuthContext();
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
     password: '',
-    confirmPassword: '',
-    displayName: ''
+    confirmPassword: ''
   });
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleChange = (e) => {
+  const { register } = useAuth();
+
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-    
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!formData.email) {
-      newErrors.email = 'Email é obrigatório';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email inválido';
-    }
-    
-    if (!formData.password) {
-      newErrors.password = 'Senha é obrigatória';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Senha deve ter pelo menos 6 caracteres';
-    }
-    
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Senhas não coincidem';
-    }
-    
-    if (!formData.displayName) {
-      newErrors.displayName = 'Nome é obrigatório';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) return;
-    
-    setIsLoading(true);
-    
+    setLoading(true);
+    setError('');
+
+    // Validar senhas
+    if (formData.password !== formData.confirmPassword) {
+      setError('As senhas não coincidem');
+      setLoading(false);
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres');
+      setLoading(false);
+      return;
+    }
+
     try {
-      const result = await register(formData.email, formData.password, formData.displayName);
-      
-      if (result.success) {
-        console.log('Usuário criado com sucesso:', result.user);
-        alert('Conta criada com sucesso!');
-      } else {
-        console.error('Erro no registro:', result.error);
-      }
-    } catch (error) {
-      console.error('Erro inesperado:', error);
+      await register(formData.email, formData.password, formData.name);
+    } catch (err) {
+      setError(err.message || 'Erro ao criar conta');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center p-4">
+    <AuthLayout>
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <div className="text-center mb-8">
-            <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mb-4">
-              <span className="text-white font-bold text-xl">194</span>
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="mb-6">
+            <h1 className="text-gradient text-4xl font-black tracking-tight mb-2">
               194-STS
             </h1>
-            <p className="text-gray-600">
-              Criar nova conta
-            </p>
+            <div 
+              className="w-20 h-1 mx-auto rounded-full"
+              style={{ background: 'linear-gradient(90deg, var(--primary-500), var(--secondary-500))' }}
+            ></div>
           </div>
+          <h2 className="text-2xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
+            Criar nova conta
+          </h2>
+          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+            Preencha os dados para se cadastrar
+          </p>
+        </div>
 
-          {authError && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600">{authError}</p>
-            </div>
-          )}
-
+        {/* Register Form */}
+        <div className="card p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
-            <Input
-              type="text"
-              name="displayName"
-              label="Nome Completo"
-              placeholder="Seu nome completo"
-              value={formData.displayName}
-              onChange={handleChange}
-              error={errors.displayName}
-              required
-            />
+            {error && (
+              <div 
+                className="p-4 rounded-lg border text-sm"
+                style={{
+                  backgroundColor: 'var(--error)' + '10',
+                  borderColor: 'var(--error)',
+                  color: 'var(--error)'
+                }}
+              >
+                {error}
+              </div>
+            )}
 
-            <Input
-              type="email"
-              name="email"
-              label="Email"
-              placeholder="seu@email.com"
-              value={formData.email}
-              onChange={handleChange}
-              error={errors.email}
-              required
-              icon={EmailIcon}
-            />
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                  Nome completo
+                </label>
+                <Input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="Seu nome completo"
+                  required
+                />
+              </div>
 
-            <PasswordInput
-              name="password"
-              label="Senha"
-              placeholder="Digite sua senha"
-              value={formData.password}
-              onChange={handleChange}
-              error={errors.password}
-              required
-            />
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                  Email
+                </label>
+                <Input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="seu@email.com"
+                  required
+                  autoComplete="email"
+                />
+              </div>
 
-            <PasswordInput
-              name="confirmPassword"
-              label="Confirmar Senha"
-              placeholder="Confirme sua senha"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              error={errors.confirmPassword}
-              required
-            />
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                  Senha
+                </label>
+                <PasswordInput
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  placeholder="Mínimo 6 caracteres"
+                  required
+                  autoComplete="new-password"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                  Confirmar senha
+                </label>
+                <PasswordInput
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  placeholder="Digite a senha novamente"
+                  required
+                  autoComplete="new-password"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <input 
+                type="checkbox" 
+                id="terms"
+                required
+                className="w-4 h-4 mt-1 rounded border-2"
+                style={{ 
+                  accentColor: 'var(--primary-500)',
+                  borderColor: 'var(--border-primary)'
+                }}
+              />
+              <label htmlFor="terms" className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                Eu concordo com os{' '}
+                <button 
+                  type="button"
+                  className="font-medium hover:underline"
+                  style={{ color: 'var(--primary-500)' }}
+                >
+                  Termos de Uso
+                </button>
+                {' '}e{' '}
+                <button 
+                  type="button"
+                  className="font-medium hover:underline"
+                  style={{ color: 'var(--primary-500)' }}
+                >
+                  Política de Privacidade
+                </button>
+              </label>
+            </div>
 
             <Button
               type="submit"
-              fullWidth
-              loading={isLoading}
-              disabled={isLoading}
+              disabled={loading}
+              className="w-full btn btn-primary py-4 text-base font-semibold"
             >
-              {isLoading ? 'Criando conta...' : 'Criar Conta'}
+              {loading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <LoadingSpinner size="sm" />
+                  Criando conta...
+                </div>
+              ) : (
+                'Criar conta'
+              )}
             </Button>
           </form>
 
-          <div className="mt-8 text-center">
-            <p className="text-sm text-gray-600">
+          {/* Login Link */}
+          <div className="mt-8 pt-6 border-t" style={{ borderColor: 'var(--border-primary)' }}>
+            <p className="text-center text-sm" style={{ color: 'var(--text-muted)' }}>
               Já tem uma conta?{' '}
               <Link 
-                to={ROUTES.LOGIN} 
-                className="text-primary-600 hover:text-primary-700 font-medium"
+                to="/login" 
+                className="font-semibold hover:underline transition-colors"
+                style={{ color: 'var(--primary-500)' }}
               >
-                Fazer login
+                Entre aqui
               </Link>
             </p>
           </div>
         </div>
+
+        {/* Footer */}
+        <div className="mt-8 text-center">
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+            © 2024 194-STS. Todos os direitos reservados.
+          </p>
+        </div>
       </div>
-    </div>
+    </AuthLayout>
   );
 };
 
