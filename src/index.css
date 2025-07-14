@@ -2,6 +2,7 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
+/* Reset básico */
 * {
   margin: 0;
   padding: 0;
@@ -25,4 +26,14 @@ code {
 
 #root {
   height: 100vh;
+}
+
+/* Animação de spin para LoadingSpinner */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

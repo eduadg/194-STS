@@ -9,37 +9,37 @@ const StatsCard = ({
   color = 'blue',
   description 
 }) => {
-  const colorClasses = {
+  const colorStyles = {
     blue: {
-      bg: 'bg-blue-50',
-      icon: 'text-blue-600',
-      border: 'border-blue-200',
-      gradient: 'from-blue-50 to-blue-100'
+      bg: 'rgba(59, 130, 246, 0.1)',
+      icon: '#3b82f6',
+      border: 'rgba(59, 130, 246, 0.2)',
+      gradient: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.2))'
     },
     green: {
-      bg: 'bg-green-50',
-      icon: 'text-green-600',
-      border: 'border-green-200',
-      gradient: 'from-green-50 to-green-100'
+      bg: 'rgba(34, 197, 94, 0.1)',
+      icon: '#22c55e',
+      border: 'rgba(34, 197, 94, 0.2)',
+      gradient: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.2))'
     },
     purple: {
-      bg: 'bg-purple-50',
-      icon: 'text-purple-600',
-      border: 'border-purple-200',
-      gradient: 'from-purple-50 to-purple-100'
+      bg: 'rgba(147, 51, 234, 0.1)',
+      icon: '#9333ea',
+      border: 'rgba(147, 51, 234, 0.2)',
+      gradient: 'linear-gradient(135deg, rgba(147, 51, 234, 0.1), rgba(147, 51, 234, 0.2))'
     },
     orange: {
-      bg: 'bg-orange-50',
-      icon: 'text-orange-600',
-      border: 'border-orange-200',
-      gradient: 'from-orange-50 to-orange-100'
+      bg: 'rgba(249, 115, 22, 0.1)',
+      icon: '#f97316',
+      border: 'rgba(249, 115, 22, 0.2)',
+      gradient: 'linear-gradient(135deg, rgba(249, 115, 22, 0.1), rgba(249, 115, 22, 0.2))'
     }
   };
 
   const getChangeColor = () => {
-    if (changeType === 'positive') return 'text-green-600';
-    if (changeType === 'negative') return 'text-red-600';
-    return 'text-gray-600';
+    if (changeType === 'positive') return 'var(--success)';
+    if (changeType === 'negative') return 'var(--error)';
+    return 'var(--text-muted)';
   };
 
   const getChangeIcon = () => {
@@ -60,32 +60,69 @@ const StatsCard = ({
     return null;
   };
 
-  const colors = colorClasses[color] || colorClasses.blue;
+  const colors = colorStyles[color] || colorStyles.blue;
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg hover:border-gray-300 transition-all duration-300 group">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="flex items-center space-x-3 mb-4">
-            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${colors.gradient} ${colors.border} border flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow duration-300`}>
-              <div className={colors.icon}>
+    <div 
+      className="card-elevated p-6"
+      style={{
+        borderRadius: 'var(--radius-xl)',
+        transition: 'all var(--transition-base) ease'
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+            <div 
+              style={{
+                width: '48px',
+                height: '48px',
+                borderRadius: 'var(--radius-xl)',
+                background: colors.gradient,
+                border: `1px solid ${colors.border}`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: 'var(--shadow-sm)',
+                transition: 'box-shadow var(--transition-base) ease'
+              }}
+            >
+              <div style={{ color: colors.icon }}>
                 {icon}
               </div>
             </div>
             <div>
-              <h3 className="text-sm font-medium text-gray-600 mb-1">{title}</h3>
-              <p className="text-2xl font-bold text-gray-900">{value}</p>
+              <h3 style={{ 
+                fontSize: '14px', 
+                fontWeight: '500', 
+                color: 'var(--text-secondary)',
+                marginBottom: '4px'
+              }}>
+                {title}
+              </h3>
+              <p style={{ 
+                fontSize: '24px', 
+                fontWeight: '700', 
+                color: 'var(--text-primary)'
+              }}>
+                {value}
+              </p>
             </div>
           </div>
           
           {change && (
-            <div className="flex items-center space-x-2">
-              <div className={`flex items-center space-x-1 ${getChangeColor()}`}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '4px',
+                color: getChangeColor()
+              }}>
                 {getChangeIcon()}
-                <span className="text-sm font-medium">{change}</span>
+                <span style={{ fontSize: '14px', fontWeight: '500' }}>{change}</span>
               </div>
               {description && (
-                <span className="text-sm text-gray-500">{description}</span>
+                <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>{description}</span>
               )}
             </div>
           )}

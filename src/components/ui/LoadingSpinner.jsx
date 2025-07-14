@@ -1,18 +1,21 @@
 import React from 'react';
 
 const LoadingSpinner = ({ size = 'md', className = '' }) => {
-  const sizeClasses = {
-    sm: 'w-4 h-4',
-    md: 'w-6 h-6',
-    lg: 'w-8 h-8'
+  const sizeStyles = {
+    sm: { width: '16px', height: '16px' },
+    md: { width: '24px', height: '24px' },
+    lg: { width: '32px', height: '32px' }
   };
 
   return (
     <div 
-      className={`${sizeClasses[size]} ${className} animate-spin rounded-full border-2 border-t-transparent`}
-      style={{ 
-        borderColor: 'var(--primary-500)',
-        borderTopColor: 'transparent'
+      className={className}
+      style={{
+        ...sizeStyles[size],
+        borderRadius: '50%',
+        border: '2px solid var(--primary-500)',
+        borderTopColor: 'transparent',
+        animation: 'spin 1s linear infinite'
       }}
     />
   );

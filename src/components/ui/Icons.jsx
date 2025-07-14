@@ -8,7 +8,8 @@ const Icon = ({ children, size = 20, className = "", ...props }) => (
     viewBox="0 0 24 24"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className={`inline-block ${className}`}
+    style={{ display: 'inline-block' }}
+    className={className}
     {...props}
   >
     {children}

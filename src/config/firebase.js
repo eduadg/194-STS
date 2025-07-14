@@ -26,4 +26,5 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 
+// Export the app instance for potential future use
 export default app; 

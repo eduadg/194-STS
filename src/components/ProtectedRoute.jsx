@@ -1,13 +1,18 @@
 import React from 'react';
-import { useAuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import LoadingSpinner from './ui/LoadingSpinner';
 
 const ProtectedRoute = ({ children, fallback = null }) => {
-  const { user, loading } = useAuthContext();
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div style={{ 
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
         <LoadingSpinner size="lg" />
       </div>
     );

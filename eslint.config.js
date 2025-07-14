@@ -5,7 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', 'node_modules']),
   {
     files: ['**/*.{js,jsx}'],
     extends: [
@@ -24,6 +24,13 @@ export default defineConfig([
     },
     rules: {
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      'react/prop-types': 'off', // Desabilitar para projetos sem PropTypes
+      'react/react-in-jsx-scope': 'off', // Não necessário com React 17+
+      'no-console': 'warn', // Avisar sobre console.log em produção
+      'prefer-const': 'error', // Preferir const sobre let
+      'no-var': 'error', // Não usar var
+      'object-shorthand': 'error', // Usar shorthand quando possível
+      'prefer-template': 'error', // Preferir template literals
     },
   },
 ])

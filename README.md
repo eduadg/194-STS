@@ -1,71 +1,72 @@
-# 194-STS - Projeto React + Vite
+# 194-STS - Sistema de Gestão Moderno
 
-Este é um projeto React criado com Vite, oferecendo uma configuração moderna e rápida para desenvolvimento.
+Este é um projeto React moderno criado com Vite, oferecendo uma interface de usuário elegante e profissional com tema escuro e componentes reutilizáveis.
 
 ## 🚀 Tecnologias Utilizadas
 
-- **React** - Biblioteca JavaScript para interfaces de usuário
+- **React 19** - Biblioteca JavaScript para interfaces de usuário
 - **Vite** - Build tool moderna e rápida
+- **Tailwind CSS 4** - Framework CSS utilitário
+- **Firebase** - Backend como serviço (Auth, Firestore)
+- **React Router DOM** - Roteamento para aplicações React
 - **ESLint** - Linter para JavaScript/React
-- **Git** - Controle de versão
 
-## 📋 Tópicos de Configuração do Repositório
+## 🎨 Design System
 
-### 1. Criação do Repositório Local
+O projeto utiliza um sistema de design moderno com:
 
-```bash
-# Inicializar repositório Git local
-git init
+- **Tema escuro profissional** com cores azul escuro e verde-azul
+- **Componentes reutilizáveis** (Button, Input, Card, etc.)
+- **Ícones SVG customizados** para melhor performance
+- **Animações suaves** e transições elegantes
+- **Layout responsivo** para todos os dispositivos
 
-# Adicionar todos os arquivos ao staging area
-git add .
+## 🔧 Correções Implementadas
 
-# Fazer o primeiro commit
-git commit -m "Initial commit: React + Vite project setup"
+### Duplicações Removidas
+- ✅ **Estilos CSS duplicados** - Removidos conflitos entre `App.css` e `theme-modern.css`
+- ✅ **Arquivos de rotas duplicados** - Removido `src/routes/index.jsx`
+- ✅ **Classes CSS conflitantes** - Ajustados componentes para usar apenas estilos do sistema de design
+
+### Configurações Otimizadas
+- ✅ **Tailwind CSS** - Configurado para trabalhar em harmonia com estilos customizados
+- ✅ **PostCSS** - Configurado com autoprefixer
+- ✅ **ESLint** - Regras melhoradas para qualidade de código
+- ✅ **Vite** - Configuração otimizada para desenvolvimento
+
+### Estrutura Melhorada
+- ✅ **Constantes de rotas** - Centralizadas em `src/routes/constants.js`
+- ✅ **Hooks customizados** - Melhorados com TypeScript JSDoc
+- ✅ **Serviços** - Documentação melhorada com comentários
+- ✅ **Contextos** - Organização e comentários aprimorados
+
+## 📋 Estrutura do Projeto
+
 ```
-
-**Comandos utilizados:**
-- `git init` - Cria um novo repositório Git no diretório atual
-- `git add .` - Adiciona todos os arquivos modificados ao staging area
-- `git commit -m "mensagem"` - Cria um commit com as mudanças
-
-### 2. Criação do Repositório Remoto
-
-```bash
-# Criar repositório no GitHub usando GitHub CLI
-gh repo create 194-STS --public --source=. --remote=origin --push
+194-STS/
+├── public/              # Arquivos estáticos
+├── src/
+│   ├── components/      # Componentes reutilizáveis
+│   │   └── ui/         # Componentes de interface
+│   ├── contexts/        # Contextos React (Auth)
+│   ├── hooks/          # Hooks customizados
+│   ├── layouts/        # Layouts da aplicação
+│   ├── pages/          # Páginas da aplicação
+│   ├── routes/         # Configuração de rotas
+│   ├── services/       # Serviços (Firebase)
+│   ├── config/         # Configurações (Firebase)
+│   ├── assets/         # Recursos estáticos
+│   ├── App.jsx         # Componente principal
+│   ├── main.jsx        # Ponto de entrada
+│   ├── index.css       # Estilos globais
+│   ├── theme-modern.css # Sistema de design
+│   └── App.css         # Estilos básicos
+├── package.json        # Dependências e scripts
+├── vite.config.js      # Configuração do Vite
+├── tailwind.config.js  # Configuração do Tailwind
+├── postcss.config.js   # Configuração do PostCSS
+└── eslint.config.js    # Configuração do ESLint
 ```
-
-**Parâmetros utilizados:**
-- `194-STS` - Nome do repositório
-- `--public` - Repositório público
-- `--source=.` - Usar o diretório atual como fonte
-- `--remote=origin` - Configurar remote como "origin"
-- `--push` - Tentar fazer push automático (opcional)
-
-**Alternativa manual:**
-```bash
-# Adicionar remote origin
-git remote add origin https://github.com/eduadg/194-STS.git
-```
-
-### 3. Sincronizando Repositórios
-
-```bash
-# Enviar código local para o repositório remoto
-git push -u origin master
-
-# Para futuras atualizações
-git add .
-git commit -m "Descrição das mudanças"
-git push
-```
-
-**Comandos de sincronização:**
-- `git push -u origin master` - Primeiro push, configurando upstream
-- `git push` - Enviar commits para o repositório remoto
-- `git pull` - Baixar mudanças do repositório remoto
-- `git fetch` - Buscar mudanças sem aplicar
 
 ## 🛠️ Comandos Úteis
 
@@ -82,6 +83,15 @@ npm run build
 
 # Preview do build
 npm run preview
+
+# Linting
+npm run lint
+
+# Formatação de código
+npm run format
+
+# Limpar cache
+npm run clean
 ```
 
 ### Git
@@ -102,18 +112,41 @@ git checkout -b nome-da-branch
 git checkout nome-da-branch
 ```
 
-## 📁 Estrutura do Projeto
+## 🎯 Funcionalidades
 
-```
-194-STS/
-├── public/          # Arquivos estáticos
-├── src/             # Código fonte
-│   ├── assets/      # Recursos (imagens, etc.)
-│   ├── App.jsx      # Componente principal
-│   └── main.jsx     # Ponto de entrada
-├── package.json     # Dependências e scripts
-├── vite.config.js   # Configuração do Vite
-└── README.md        # Este arquivo
+- **Autenticação** - Login/Registro com Firebase Auth
+- **Dashboard** - Métricas e estatísticas em tempo real
+- **Navegação** - Sidebar colapsável e header moderno
+- **Responsividade** - Interface adaptável para mobile
+- **Tema escuro** - Design profissional e moderno
+
+## 🔧 Configurações
+
+### Firebase
+O projeto está configurado com Firebase para:
+- Autenticação de usuários
+- Armazenamento de dados (Firestore)
+- Analytics (opcional)
+
+### Tailwind CSS
+Configurado para trabalhar em harmonia com o sistema de design customizado:
+- Variáveis CSS integradas
+- Preflight desabilitado para evitar conflitos
+- Classes utilitárias disponíveis
+
+### Sistema de Design
+- **Variáveis CSS** - Centralizadas em `theme-modern.css`
+- **Componentes** - Reutilizáveis e consistentes
+- **Animações** - Suaves e performáticas
+- **Responsividade** - Mobile-first approach
+
+## 🚀 Deploy
+
+```bash
+# Build para produção
+npm run build
+
+# Os arquivos estarão em dist/
 ```
 
 ## 🔗 Links Úteis
@@ -121,8 +154,9 @@ git checkout nome-da-branch
 - [Repositório no GitHub](https://github.com/eduadg/194-STS)
 - [Documentação do React](https://react.dev/)
 - [Documentação do Vite](https://vitejs.dev/)
-- [GitHub CLI](https://cli.github.com/)
+- [Documentação do Tailwind CSS](https://tailwindcss.com/)
+- [Documentação do Firebase](https://firebase.google.com/docs)
 
 ---
 
-**Criado com ❤️ usando React + Vite**
+**Criado com ❤️ usando React + Vite + Tailwind CSS**
