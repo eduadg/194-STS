@@ -3,7 +3,7 @@ import { AuthService } from '../services/authService';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
